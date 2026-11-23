@@ -1,6 +1,3 @@
-const path = require('node:path');
-const config = require('../config');
-
 // Metadados em memória nesta fase; os arquivos ficam no filesystem local.
 const documents = new Map();
 
@@ -17,8 +14,4 @@ function findById(id) {
   return documents.get(id) ?? null;
 }
 
-function resolveFilePath(metadata) {
-  return path.join(config.storageDir, metadata.storedName);
-}
-
-module.exports = { save, findAll, findById, resolveFilePath };
+module.exports = { save, findAll, findById };

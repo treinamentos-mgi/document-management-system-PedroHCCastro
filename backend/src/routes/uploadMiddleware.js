@@ -4,12 +4,12 @@ const { randomUUID } = require('node:crypto');
 const multer = require('multer');
 const config = require('../config');
 
-fs.mkdirSync(config.storageDir, { recursive: true });
-
 const SAFE_EXTENSION = /^\.[a-z0-9]{1,10}$/i;
 
 const storage = multer.diskStorage({
-  destination: config.storageDir,
+  destination: (req, file, cb) => {
+    fs.mkdir(config.storageDir, { recursive: true }, (err) => cb(err, config.storageDir));
+  },
   filename: (req, file, cb) => {
     const extension = path.extname(file.originalname);
     cb(null, `${randomUUID()}${SAFE_EXTENSION.test(extension) ? extension : ''}`);

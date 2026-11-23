@@ -7,10 +7,10 @@ export default function DocumentList({ documents }) {
 
   return (
     <ul>
-      {documents.map((document) => (
-        <li key={document.id}>
-          {document.originalName} ({(document.size / 1024).toFixed(1)} KB) - enviado em{' '}
-          {new Date(document.uploadedAt).toLocaleString('pt-BR')} <DownloadButton id={document.id} />
+      {documents.map((doc) => (
+        <li key={doc.id}>
+          {doc.originalName} ({(doc.size / 1024).toFixed(1)} KB) - enviado em{' '}
+          {new Date(doc.uploadedAt).toLocaleString('pt-BR')} <DownloadButton id={doc.id} />
         </li>
       ))}
     </ul>

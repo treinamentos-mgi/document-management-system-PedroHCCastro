@@ -27,13 +27,18 @@ app.get('/health', (req, res) => {
 app.use(documentRoutes);
 
 app.use((err, req, res, next) => {
+  if (res.headersSent) return next(err);
   if (err instanceof multer.MulterError) {
     const message = err.code === 'LIMIT_FILE_SIZE'
       ? 'Arquivo excede o tamanho máximo permitido.'
       : 'Falha ao processar o upload.';
     return res.status(400).json({ error: message });
   }
-  return next(err);
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ error: 'Corpo da requisição JSON inválido.' });
+  }
+  console.error(err);
+  return res.status(500).json({ error: 'Erro interno do servidor.' });
 });
 
 if (require.main === module) {
