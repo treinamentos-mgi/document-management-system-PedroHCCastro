@@ -17,7 +17,19 @@ export default function DocumentsPage() {
   }
 
   useEffect(() => {
-    refresh();
+    let ignore = false;
+    listDocuments()
+      .then((docs) => {
+        if (ignore) return;
+        setDocuments(docs);
+        setLoadError('');
+      })
+      .catch(() => {
+        if (!ignore) setLoadError('Não foi possível carregar os documentos.');
+      });
+    return () => {
+      ignore = true;
+    };
   }, []);
 
   async function handleUpload(file) {

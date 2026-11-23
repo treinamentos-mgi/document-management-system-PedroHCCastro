@@ -1,3 +1,4 @@
+const fs = require('node:fs');
 const documentService = require('../services/documentService');
 
 const DEFAULT_OWNER = 'anonymous';
@@ -15,19 +16,26 @@ function listDocuments(req, res) {
   res.json(documentService.listDocuments());
 }
 
-function downloadDocument(req, res) {
+async function downloadDocument(req, res) {
   const download = documentService.getDownloadInfo(req.params.id);
   if (!download) {
     return res.status(404).json({ error: 'Documento não encontrado.' });
   }
 
   const { metadata, filePath } = download;
+  try {
+    await fs.promises.access(filePath);
+  } catch {
+    return res.status(404).json({ error: 'Arquivo não encontrado no armazenamento.' });
+  }
+
   res.set('Content-Type', metadata.mimeType);
+  res.set('X-Content-Type-Options', 'nosniff');
   res.download(filePath, metadata.originalName, (err) => {
-    if (!err || res.headersSent) return;
-    res.removeHeader('Content-Type');
-    res.removeHeader('Content-Disposition');
-    res.status(404).json({ error: 'Arquivo não encontrado no armazenamento.' });
+    if (err && !res.headersSent) {
+      res.removeHeader('Content-Disposition');
+      res.status(404).json({ error: 'Arquivo não encontrado no armazenamento.' });
+    }
   });
 }
 

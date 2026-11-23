@@ -19,5 +19,5 @@ export async function uploadDocument(file) {
 }
 
 export function getDownloadUrl(id) {
-  return `${API_BASE}/documents/${id}/download`;
+  return `${API_BASE}/documents/${encodeURIComponent(id)}/download`;
 }

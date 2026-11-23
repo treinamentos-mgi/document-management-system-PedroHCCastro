@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function UploadComponent({ onUpload }) {
   const [file, setFile] = useState(null);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState('');
+  const formRef = useRef(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -17,7 +18,7 @@ export default function UploadComponent({ onUpload }) {
     try {
       await onUpload(file);
       setFile(null);
-      event.target.reset();
+      formRef.current?.reset();
     } catch (err) {
       setError(err.message);
     } finally {
@@ -26,7 +27,7 @@ export default function UploadComponent({ onUpload }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form ref={formRef} onSubmit={handleSubmit}>
       <input type="file" onChange={(event) => setFile(event.target.files[0] ?? null)} />
       <button type="submit" disabled={sending}>
         {sending ? 'Enviando...' : 'Enviar'}
